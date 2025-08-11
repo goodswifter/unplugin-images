@@ -1,5 +1,5 @@
 import path from 'node:path'
-import chokidar, { FSWatcher } from 'chokidar'
+import chokidar, { type FSWatcher } from 'chokidar'
 import gradient, { cristal, instagram, passion } from 'gradient-string'
 
 import type { Options } from './types'
@@ -25,7 +25,7 @@ export const resolveOptions = (userOptions: Options = {}): Options => {
 /**
  * 生成 图片常量名 → 绝对路径 的映射表
  */
-export function generateConstantsMap(assetDir: string): Record<string, string> {
+export const generateConstantsMap = (assetDir: string): Record<string, string> => {
   const files = collectImageFiles(assetDir)
   const constants: Record<string, string> = {}
   for (const file of files) {
@@ -38,7 +38,7 @@ export function generateConstantsMap(assetDir: string): Record<string, string> {
 /**
  * 仅生成一次资源常量文件（不进入监听）
  */
-export function generateOnce(options: Options = {}): void {
+export const generateOnce = (options: Options = {}) => {
   const resolved = resolveOptions(options)
   const constants = generateConstantsMap(resolved.dir!)
   writeConstants(constants, resolved.dts!)
@@ -47,7 +47,7 @@ export function generateOnce(options: Options = {}): void {
 /**
  * 监听图片目录的变化并在变更时重新生成常量文件
  */
-export function watchImages(options: Options = {}, onChange?: () => void): FSWatcher {
+export const watchImages = (options: Options = {}, onChange?: () => void): FSWatcher => {
   const resolved = resolveOptions(options)
   console.log(gradient(['cyan', 'cyan']).multiline(`Watching for changes in ${resolved.dir}`))
   const watcher = chokidar.watch(resolved.dir!, {
@@ -57,6 +57,7 @@ export function watchImages(options: Options = {}, onChange?: () => void): FSWat
     awaitWriteFinish: true,
   })
 
+  // 重新生成常量文件
   const regenerate = () => {
     const constants = generateConstantsMap(resolved.dir!)
     writeConstants(constants, resolved.dts!)
@@ -112,15 +113,11 @@ export function watchImages(options: Options = {}, onChange?: () => void): FSWat
 /**
  * 运行生成流程：生成一次；若开启监听则启动 watcher 并返回关闭方法
  */
-export function runGenerator(options: Options = {}): { close?: () => Promise<void> | void } {
+export const runGenerator = (options: Options = {}): { close?: () => Promise<void> | void } => {
   const resolved = resolveOptions(options)
   console.log(gradient(['cyan', 'magenta']).multiline('Generating image constants...'))
   generateOnce(resolved)
   if (!resolved.watch) return {}
   const watcher = watchImages(resolved)
-  return {
-    close: async () => {
-      await watcher.close()
-    },
-  }
+  return { close: async () => await watcher.close() }
 }

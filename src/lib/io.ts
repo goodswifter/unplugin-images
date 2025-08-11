@@ -9,8 +9,9 @@ export const IMAGE_EXTENSIONS: string[] = ['.png', '.jpg', '.jpeg', '.gif', '.sv
 /**
  * 递归收集指定目录下的所有图片文件（返回绝对路径）
  */
-export function collectImageFiles(assetDir: string): string[] {
+export const collectImageFiles = (assetDir: string): string[] => {
   const collected: string[] = []
+  // 递归访问指定目录下的所有图片文件
   const visit = (dir: string) => {
     if (!fs.existsSync(dir)) return
     const entries = fs.readdirSync(dir, { withFileTypes: true })
@@ -19,9 +20,7 @@ export function collectImageFiles(assetDir: string): string[] {
       if (entry.name === '.DS_Store') continue
       if (entry.isDirectory()) {
         visit(fullPath)
-      } else if (
-        (IMAGE_EXTENSIONS as readonly string[]).includes(path.extname(entry.name).toLowerCase())
-      ) {
+      } else if (IMAGE_EXTENSIONS.includes(path.extname(entry.name).toLowerCase())) {
         collected.push(fullPath)
       }
     }
@@ -33,7 +32,7 @@ export function collectImageFiles(assetDir: string): string[] {
 /**
  * 将常量映射写入目标文件（若内容未变化则跳过写入）
  */
-export function writeConstants(constants: Record<string, string>, dtsFile: string): void {
+export const writeConstants = (constants: Record<string, string>, dtsFile: string): void => {
   const entries = Object.entries(constants)
 
   const imports = entries
