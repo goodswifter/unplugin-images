@@ -1,7 +1,6 @@
 import type { UnpluginFactory } from 'unplugin'
-import type { Options } from './types'
 import { createUnplugin } from 'unplugin'
-import { runGenerator, resolveOptions } from './generator'
+import { runGenerator, resolveOptions, type Options } from './lib'
 
 export const unpluginFactory: UnpluginFactory<Options | undefined> = rawOptions => {
   const resolved = resolveOptions(rawOptions || {})
