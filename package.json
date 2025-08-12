@@ -51,6 +51,7 @@
     "build": "tsdown",
     "dev": "tsdown -w",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "play": "npm -C playground run dev",
     "prepublishOnly": "npm run build",
     "release": "bumpp && pnpm publish",

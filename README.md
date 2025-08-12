@@ -25,8 +25,8 @@ yarn add -D unplugin-images
 
 ```ts
 // vite.config.ts
-import { defineConfig } from 'vite'
 import Images from 'unplugin-images/vite'
+import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [
@@ -73,7 +73,7 @@ export default R
 ### 配置项 Options
 
 ```ts
-type Options = {
+interface Options {
   /** 图片目录（相对项目根目录或绝对路径） */
   dir?: string // 默认：'src/assets/images'
   /** 生成的常量文件路径（相对项目根目录或绝对路径） */

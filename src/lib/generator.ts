@@ -1,9 +1,10 @@
-import path from 'node:path'
-import chokidar, { type FSWatcher } from 'chokidar'
-import gradient, { cristal, instagram, passion } from 'gradient-string'
-
+import type { FSWatcher } from 'chokidar'
 import type { Options } from './types'
-import { IMAGE_EXTENSIONS, collectImageFiles, writeConstants } from './io'
+import path from 'node:path'
+import chokidar from 'chokidar'
+
+import gradient, { cristal, instagram, passion } from 'gradient-string'
+import { collectImageFiles, IMAGE_EXTENSIONS, writeConstants } from './io'
 import { toConstantName } from './naming'
 
 /**
@@ -38,7 +39,7 @@ export const generateConstantsMap = (assetDir: string): Record<string, string> =
 /**
  * 仅生成一次资源常量文件（不进入监听）
  */
-export const generateOnce = (options: Options = {}) => {
+export const generateOnce = (options: Options = {}): void => {
   const resolved = resolveOptions(options)
   const constants = generateConstantsMap(resolved.dir!)
   writeConstants(constants, resolved.dts!)
@@ -51,59 +52,59 @@ export const watchImages = (options: Options = {}, onChange?: () => void): FSWat
   const resolved = resolveOptions(options)
   console.log(gradient(['cyan', 'cyan']).multiline(`Watching for changes in ${resolved.dir}`))
   const watcher = chokidar.watch(resolved.dir!, {
-    ignored: /(^|[\/\\])\../,
+    ignored: /(^|[/\\])\../,
     persistent: true,
     ignoreInitial: true,
     awaitWriteFinish: true,
   })
 
   // 重新生成常量文件
-  const regenerate = () => {
+  const regenerate = (): void => {
     const constants = generateConstantsMap(resolved.dir!)
     writeConstants(constants, resolved.dts!)
     onChange?.()
   }
 
   let timer: NodeJS.Timeout | undefined
-  const debounced = () => {
+  const debounced = (): void => {
     if (timer) clearTimeout(timer)
     timer = setTimeout(regenerate, 200)
   }
 
   watcher
-    .on('add', filePath => {
+    .on('add', (filePath: string) => {
       const ext = path.extname(filePath).toLowerCase()
       if ((IMAGE_EXTENSIONS as readonly string[]).includes(ext)) {
         console.log(cristal(`File ${filePath} has been added`))
         debounced()
       }
     })
-    .on('change', filePath => {
+    .on('change', (filePath: string) => {
       const ext = path.extname(filePath).toLowerCase()
       if ((IMAGE_EXTENSIONS as readonly string[]).includes(ext)) {
         console.log(`File ${filePath} has been changed`)
         debounced()
       }
     })
-    .on('unlink', filePath => {
+    .on('unlink', (filePath: string) => {
       const ext = path.extname(filePath).toLowerCase()
       if ((IMAGE_EXTENSIONS as readonly string[]).includes(ext)) {
         console.log(passion(`File ${filePath} has been removed`))
         debounced()
       }
     })
-    .on('addDir', dirPath => {
+    .on('addDir', (dirPath: string) => {
       console.log(cristal(`Directory ${dirPath} has been added`))
       debounced()
     })
-    .on('unlinkDir', dirPath => {
+    .on('unlinkDir', (dirPath: string) => {
       console.log(instagram(`Directory ${dirPath} has been removed`))
       debounced()
     })
     .on('ready', () => {
       console.log(gradient(['cyan', 'cyan']).multiline('Initial scan complete, ready for changes'))
     })
-    .on('error', error => {
+    .on('error', (error: Error) => {
       console.error(passion(`Error: ${error}`))
     })
 

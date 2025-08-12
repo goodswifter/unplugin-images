@@ -12,7 +12,7 @@ export const IMAGE_EXTENSIONS: string[] = ['.png', '.jpg', '.jpeg', '.gif', '.sv
 export const collectImageFiles = (assetDir: string): string[] => {
   const collected: string[] = []
   // 递归访问指定目录下的所有图片文件
-  const visit = (dir: string) => {
+  const visit = (dir: string): void => {
     if (!fs.existsSync(dir)) return
     const entries = fs.readdirSync(dir, { withFileTypes: true })
     for (const entry of entries) {
