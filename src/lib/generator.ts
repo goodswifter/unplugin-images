@@ -104,7 +104,7 @@ export const watchImages = (options: Options = {}, onChange?: () => void): FSWat
     .on('ready', () => {
       console.log(gradient(['cyan', 'cyan']).multiline('Initial scan complete, ready for changes'))
     })
-    .on('error', (error: Error) => {
+    .on('error', (error: unknown) => {
       console.error(passion(`Error: ${error}`))
     })
 
