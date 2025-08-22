@@ -20,7 +20,8 @@ export const resolveOptions = (userOptions: Options = {}): Options => {
     : path.join(root, userOptions.dts || 'src/assets/r.ts')
   const isProd = process.env.NODE_ENV === 'production'
   const watch = userOptions.watch ?? !isProd
-  return { root, dir, dts, watch }
+  const importStyle = userOptions.importStyle ?? 'import'
+  return { root, dir, dts, watch, importStyle }
 }
 
 /**
@@ -42,7 +43,7 @@ export const generateConstantsMap = (assetDir: string): Record<string, string> =
 export const generateOnce = (options: Options = {}): void => {
   const resolved = resolveOptions(options)
   const constants = generateConstantsMap(resolved.dir!)
-  writeConstants(constants, resolved.dts!)
+  writeConstants(constants, resolved.dts!, resolved.importStyle)
 }
 
 /**
@@ -61,7 +62,7 @@ export const watchImages = (options: Options = {}, onChange?: () => void): FSWat
   // 重新生成常量文件
   const regenerate = (): void => {
     const constants = generateConstantsMap(resolved.dir!)
-    writeConstants(constants, resolved.dts!)
+    writeConstants(constants, resolved.dts!, resolved.importStyle!)
     onChange?.()
   }
 

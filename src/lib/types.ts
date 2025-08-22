@@ -7,4 +7,6 @@ export interface Options {
   watch?: boolean
   /** 项目根目录，用于解析相对路径（默认：当前工作目录） */
   root?: string
+  /** 导入方式，默认：`import` */
+  importStyle?: 'import' | 'url'
 }

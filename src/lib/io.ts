@@ -32,18 +32,37 @@ export const collectImageFiles = (assetDir: string): string[] => {
 /**
  * 将常量映射写入目标文件（若内容未变化则跳过写入）
  */
-export const writeConstants = (constants: Record<string, string>, dtsFile: string): void => {
+export const writeConstants = (
+  constants: Record<string, string>,
+  dtsFile: string,
+  importStyle: 'import' | 'url' = 'import',
+): void => {
   const entries = Object.entries(constants)
 
-  const imports = entries
-    .map(([key, absolutePath]) => {
-      const fromDir = path.dirname(dtsFile)
-      let rel = path.relative(fromDir, absolutePath)
-      if (!rel.startsWith('.')) rel = `./${rel}`
-      const importPath = rel.split(path.sep).join('/')
-      return `import ${key} from '${importPath}'`
-    })
-    .join('\n')
+  let imports: string
+  if (importStyle === 'import') {
+    // 使用 import 导入方式
+    imports = entries
+      .map(([key, absolutePath]) => {
+        const fromDir = path.dirname(dtsFile)
+        let rel = path.relative(fromDir, absolutePath)
+        if (!rel.startsWith('.')) rel = `./${rel}`
+        const importPath = rel.split(path.sep).join('/')
+        return `import ${key} from '${importPath}'`
+      })
+      .join('\n')
+  } else {
+    // 使用 URL 导入方式
+    imports = entries
+      .map(([key, absolutePath]) => {
+        const fromDir = path.dirname(dtsFile)
+        let rel = path.relative(fromDir, absolutePath)
+        if (!rel.startsWith('.')) rel = `./${rel}`
+        const importPath = rel.split(path.sep).join('/')
+        return `const ${key} = new URL('${importPath}', import.meta.url).href`
+      })
+      .join('\n')
+  }
 
   const fileContent = `/**\n * 图片资源常量\n * 自动生成，请勿手动修改\n */\n${imports}\n\nconst R = {\n${entries
     .map(([key]) => {
