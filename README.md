@@ -59,7 +59,7 @@ const R = {
   // ...
 }
 
-export default R
+export { R }
 ```
 
 ### 常量命名规则
