@@ -12,12 +12,15 @@ import { toConstantName } from './naming'
  */
 export const resolveOptions = (userOptions: Options = {}): Options => {
   const root = userOptions.root || process.cwd()
+  const defaultDir = 'src/assets/images'
+  // 去掉defaultDir的 最后一个路径 并添加r.ts -> src/assets/r.ts
+  const defaultDts = path.join(path.dirname(defaultDir), 'r.ts')
   const dir = path.isAbsolute(userOptions.dir || '')
     ? (userOptions.dir as string)
-    : path.join(root, userOptions.dir || 'src/assets/images')
+    : path.join(root, userOptions.dir || defaultDir)
   const dts = path.isAbsolute(userOptions.dts || '')
     ? (userOptions.dts as string)
-    : path.join(root, userOptions.dts || 'src/assets/r.ts')
+    : path.join(root, userOptions.dts || defaultDts)
   const isProd = process.env.NODE_ENV === 'production'
   const watch = userOptions.watch ?? !isProd
   const importStyle = userOptions.importStyle ?? 'import'

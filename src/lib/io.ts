@@ -70,7 +70,7 @@ export const writeConstants = (
       const formattedKey = needsQuotes ? `'${key}'` : key
       return `  ${formattedKey},`
     })
-    .join('\n')}\n}\n\nexport default R\n`
+    .join('\n')}\n}\n\nexport { R }\n`
 
   try {
     const exists = fs.existsSync(dtsFile)
