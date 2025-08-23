@@ -43,7 +43,7 @@ export default defineConfig({
 
 ```ts
 // 示例：在任意组件/模块中
-import R from '@/assets/r' // 或根据你的路径别名/相对路径导入
+import { R } from '@/assets/r' // 或根据你的路径别名/相对路径导入
 
 // R.ICON_LOGO_PNG、R.BANNER_AT_2X_WEBP 等即为具体图片资源
 ```
