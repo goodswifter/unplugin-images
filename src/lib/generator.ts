@@ -11,20 +11,26 @@ import { toConstantName } from './naming'
  * 解析用户配置为内部统一结构
  */
 export const resolveOptions = (userOptions: Options = {}): Options => {
-  const root = userOptions.root || process.cwd()
-  const defaultDir = 'src/assets/images'
-  const dir = path.isAbsolute(userOptions.dir || '')
-    ? (userOptions.dir as string)
-    : path.join(root, userOptions.dir || defaultDir)
-
+  const {
+    dir: _dir,
+    dts: _dts,
+    root: _root,
+    watch: _watch,
+    importStyle: _importStyle,
+  } = userOptions
+  const root = _root || process.cwd()
+  const defaultDir = _dir || 'src/assets/images'
   // 去掉defaultDir的 最后一个路径 并添加r.ts -> src/assets/r.ts
-  const defaultDts = path.join(path.dirname(dir), 'r.ts')
-  const dts = path.isAbsolute(userOptions.dts || '')
-    ? (userOptions.dts as string)
-    : path.join(root, userOptions.dts || defaultDts)
+  const defaultDts = path.join(path.dirname(defaultDir), 'r.ts')
+
+  console.log('defaultDir', defaultDir)
+  console.log('defaultDts', defaultDts)
+
+  const dir = path.isAbsolute(defaultDir) ? _dir : path.join(root, _dir || defaultDir)
+  const dts = path.isAbsolute(defaultDts) ? _dts : path.join(root, _dts || defaultDts)
   const isProd = process.env.NODE_ENV === 'production'
-  const watch = userOptions.watch ?? !isProd
-  const importStyle = userOptions.importStyle ?? 'import'
+  const watch = _watch ?? !isProd
+  const importStyle = _importStyle ?? 'import'
   return { root, dir, dts, watch, importStyle }
 }
 
