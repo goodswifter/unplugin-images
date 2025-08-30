@@ -23,9 +23,6 @@ export const resolveOptions = (userOptions: Options = {}): Options => {
   // 去掉defaultDir的 最后一个路径 并添加r.ts -> src/assets/r.ts
   const defaultDts = path.join(path.dirname(defaultDir), 'r.ts')
 
-  console.log('defaultDir', defaultDir)
-  console.log('defaultDts', defaultDts)
-
   const dir = path.isAbsolute(defaultDir) ? _dir : path.join(root, _dir || defaultDir)
   const dts = path.isAbsolute(defaultDts) ? _dts : path.join(root, _dts || defaultDts)
   const isProd = process.env.NODE_ENV === 'production'
