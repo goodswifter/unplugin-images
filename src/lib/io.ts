@@ -45,9 +45,10 @@ export const writeConstants = (
     imports = entries
       .map(([key, absolutePath]) => {
         const fromDir = path.dirname(dtsFile)
-        let rel = path.relative(fromDir, absolutePath)
-        if (!rel.startsWith('.')) rel = `./${rel}`
-        const importPath = rel.split(path.sep).join('/')
+        const relDir = fromDir.includes('src/') ? `@/${fromDir.split('src/')[1]}` : fromDir
+        const rel = path.relative(fromDir, absolutePath)
+        const importPath = `${relDir}/${rel}`
+
         return `import ${key} from '${importPath}'`
       })
       .join('\n')
