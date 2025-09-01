@@ -19,7 +19,7 @@ export const resolveOptions = (userOptions: Options = {}): Options => {
     importStyle: _importStyle,
   } = userOptions
   const root = _root || process.cwd()
-  const defaultDir = _dir || 'src/assets/images'
+  const defaultDir = _dir || (_importStyle === 'uniapp' ? 'src/static/images' : 'src/assets/images')
   // 去掉defaultDir的 最后一个路径 并添加r.ts -> src/assets/r.ts
   const defaultDts = path.join(path.dirname(defaultDir), 'r.ts')
 
@@ -49,6 +49,7 @@ export const generateConstantsMap = (assetDir: string): Record<string, string> =
  */
 export const generateOnce = (options: Options = {}): void => {
   const resolved = resolveOptions(options)
+  console.log('resolved ---->', resolved)
   const constants = generateConstantsMap(resolved.dir!)
   writeConstants(constants, resolved.dts!, resolved.importStyle)
 }

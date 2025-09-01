@@ -8,6 +8,33 @@ import path from 'node:path'
 export const IMAGE_EXTENSIONS: string[] = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp']
 
 /**
+ * 将路径转换为跨平台兼容的格式（统一使用正斜杠）
+ */
+const normalizePath = (pathStr: string): string => {
+  return pathStr.replace(/\\/g, '/')
+}
+
+/**
+ * 生成相对导入路径
+ */
+const generateImportPath = (
+  fromDir: string,
+  absolutePath: string,
+  importStyle: ImportStyle,
+): string => {
+  const normalizedFromDir = normalizePath(fromDir)
+  const prefix = importStyle === 'uniapp' ? '' : '@'
+  const relDir = normalizedFromDir.includes('src/')
+    ? `${prefix}/${normalizedFromDir.split('src/')[1]}`
+    : normalizedFromDir
+
+  let rel = path.relative(fromDir, absolutePath)
+  rel = normalizePath(rel)
+
+  return `${relDir}/${rel}`
+}
+
+/**
  * 递归收集指定目录下的所有图片文件（返回绝对路径）
  */
 export const collectImageFiles = (assetDir: string): string[] => {
@@ -45,16 +72,8 @@ export const writeConstants = (
     // 使用 import 导入方式
     imports = entries
       .map(([key, absolutePath]) => {
-        let fromDir = path.dirname(dtsFile)
-        // 如果是win平台，则使用src/src/
-        if (process.platform === 'win32') {
-          fromDir = fromDir.replace(/\\/g, '/')
-        }
-        const prefix = importStyle === 'uniapp' ? '' : '@'
-        const relDir = fromDir.includes('src/') ? `${prefix}/${fromDir.split('src/')[1]}` : fromDir
-        const rel = path.relative(fromDir, absolutePath)
-        const importPath = `${relDir}/${rel}`
-
+        const fromDir = path.dirname(dtsFile)
+        const importPath = generateImportPath(fromDir, absolutePath, importStyle)
         return `import ${key} from '${importPath}'`
       })
       .join('\n')
@@ -65,7 +84,7 @@ export const writeConstants = (
         const fromDir = path.dirname(dtsFile)
         let rel = path.relative(fromDir, absolutePath)
         if (!rel.startsWith('.')) rel = `./${rel}`
-        const importPath = rel.split(path.sep).join('/')
+        const importPath = normalizePath(rel)
         return `const ${key} = new URL('${importPath}', import.meta.url).href`
       })
       .join('\n')
