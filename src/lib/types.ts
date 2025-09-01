@@ -1,3 +1,5 @@
+export type ImportStyle = 'import' | 'url' | 'uniapp'
+
 export interface Options {
   /**
    * 图片目录(相对项目根目录或绝对路径)
@@ -28,6 +30,7 @@ export interface Options {
    *
    * 默认: `import` import xxx from 'xxx'
    * 可选: `url` const xxx = new URL('xxx', import.meta.url).href
+   * 可选: `uniapp` import xxx from '/static/images/xxx.png'
    */
-  importStyle?: 'import' | 'url'
+  importStyle?: ImportStyle
 }

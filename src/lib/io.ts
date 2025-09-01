@@ -1,3 +1,4 @@
+import type { ImportStyle } from './types'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -35,17 +36,22 @@ export const collectImageFiles = (assetDir: string): string[] => {
 export const writeConstants = (
   constants: Record<string, string>,
   dtsFile: string,
-  importStyle: 'import' | 'url' = 'import',
+  importStyle: ImportStyle = 'import',
 ): void => {
   const entries = Object.entries(constants)
 
   let imports: string
-  if (importStyle === 'import') {
+  if (importStyle === 'import' || importStyle === 'uniapp') {
     // 使用 import 导入方式
     imports = entries
       .map(([key, absolutePath]) => {
-        const fromDir = path.dirname(dtsFile)
-        const relDir = fromDir.includes('src/') ? `@/${fromDir.split('src/')[1]}` : fromDir
+        let fromDir = path.dirname(dtsFile)
+        // 如果是win平台，则使用src/src/
+        if (process.platform === 'win32') {
+          fromDir = fromDir.replace(/\\/g, '/')
+        }
+        const prefix = importStyle === 'uniapp' ? '' : '@'
+        const relDir = fromDir.includes('src/') ? `${prefix}/${fromDir.split('src/')[1]}` : fromDir
         const rel = path.relative(fromDir, absolutePath)
         const importPath = `${relDir}/${rel}`
 
