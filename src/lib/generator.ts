@@ -49,7 +49,6 @@ export const generateConstantsMap = (assetDir: string): Record<string, string> =
  */
 export const generateOnce = (options: Options = {}): void => {
   const resolved = resolveOptions(options)
-  console.log('resolved ---->', resolved)
   const constants = generateConstantsMap(resolved.dir!)
   writeConstants(constants, resolved.dts!, resolved.importStyle)
 }
